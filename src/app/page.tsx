@@ -1,5 +1,4 @@
 "use client";
-import { clear } from "console";
 import { useEffect, useState } from "react";
 
 interface StationConfigEntry {
@@ -107,7 +106,7 @@ export default function Home() {
       }
       setLastUpdated(new Date().toLocaleString());
     }
-    
+
     fetchData();
 
     const interval = setInterval(() => {
@@ -130,7 +129,6 @@ export default function Home() {
       <div className="flex flex-col items-start">
         {
           Object.keys(station_config).map((key) => {
-            const { stop, service_type, seq } = station_config[key];
             return (
               <div key={key} className="flex justify-between items-center w-full p-4 border-b">
                 <div className="p-4">

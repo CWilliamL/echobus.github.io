@@ -75,6 +75,7 @@ const station_cpr_config: StationConfig = {
 }
 
 export default function Home() {
+  const [time, setTime] = useState(new Date());
   const [lastUpdated, setLastUpdated] = useState("");
   const [location, setLocation] = useState("荃威花園");
   const station_config: StationConfig = location === "荃威花園" ? station_ag_config : station_cpr_config;
@@ -116,31 +117,42 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [location]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 1000); // update every second
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="bg-gray-100 w-full flex justify-between items-center p-4">
+    <div className="bg-gray-100 w-full flex justify-between items-center p-4 min-h-screen">
+      <p className="text-5xl font-mono text-black fixed top-10 left-5">
+        {time.toLocaleTimeString()}
+      </p>
       <div className="flex flex-col items-start">
-        <span className="text-2xl font-bold">{location}</span>
+        <span className="text-7xl font-bold text-black">{location}</span>
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+          className="bg-blue-500 text-white px-18 py-5 rounded mt-4 text-3xl"
           onClick={() => setLocation(location === "荃威花園" ? "青山公路" : "荃威花園")}
         >{location === "荃威花園"? "青山公路": "荃威花園"}</button>
-        <span className="text-sm text-gray-500 mt-2">最後更新: {lastUpdated}</span>
+        <span className="text-2xl text-gray-500 mt-2">最後更新: {lastUpdated}</span>
       </div>
       <div className="flex flex-col items-start">
         {
           Object.keys(station_config).map((key) => {
             return (
-              <div key={key} className="flex justify-between items-center w-full p-4 border-b">
+              <div key={key} className="flex justify-between items-center w-full p-4 border-b border-gray-500">
                 <div className="p-4">
-                  <span className="text-lg font-bold">{key}</span>
+                  <span className="text-3xl font-bold text-3xl text-black">{key}</span>
                 </div>
                 <div className="flex flex-col items-end">
                   {
                     station_config[key].eta?.map((entry, index) => {
                       return (
                         <div key={index} className="flex flex-end justify-between items-left">
-                          <span>{entry.time} 分鐘</span>
-                          <span>{entry.rmk}</span>
+                          <span className="text-black text-2xl">{entry.time} 分鐘 </span>
+                          <span className="text-gray-950 text-2xl ml-4">{entry.rmk}</span>
                         </div>
                       );
                     })

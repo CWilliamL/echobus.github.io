@@ -37,7 +37,6 @@ interface ETAEntry {
   data_timestamp: string;
 }
 
-
 const station_ag_config: StationConfig = {
   "39M": {
     "stop": "A6DCDE5BE439B179",
@@ -75,7 +74,7 @@ const station_cpr_config: StationConfig = {
 }
 
 export default function Home() {
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState<Date | null>(null);
   const [lastUpdated, setLastUpdated] = useState("");
   const [location, setLocation] = useState("荃威花園");
   const station_config: StationConfig = location === "荃威花園" ? station_ag_config : station_cpr_config;
@@ -125,34 +124,42 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  const isDarkMode = time ? (time.getHours() >= 18 || time.getHours() < 7) : false;
+
+  if (!time) {
+    return null; // Or show a loading spinner if you like
+  }
+
   return (
-    <div className="bg-gray-100 w-full flex justify-between items-center p-4 min-h-screen">
-      <p className="text-5xl font-mono text-black fixed top-10 left-5">
+    <div className={`w-full flex justify-between items-center p-4 min-h-screen ${isDarkMode ? "bg-black text-white" : "bg-gray-100 text-black"}`}>
+      <p className="text-5xl font-mono fixed top-10 left-5">
         {time.toLocaleTimeString()}
       </p>
       <div className="flex flex-col items-start">
-        <span className="text-7xl font-bold text-black">{location}</span>
+        <span className="text-7xl font-bold">{location}</span>
         <button
-          className="bg-blue-500 text-white px-18 py-5 rounded mt-4 text-3xl"
+          className={`px-18 py-5 rounded mt-4 text-3xl ${isDarkMode ? "bg-gray-700 text-white" : "bg-blue-500 text-white"}`}
           onClick={() => setLocation(location === "荃威花園" ? "青山公路" : "荃威花園")}
-        >{location === "荃威花園"? "青山公路": "荃威花園"}</button>
+        >
+          {location === "荃威花園" ? "青山公路" : "荃威花園"}
+        </button>
         <span className="text-2xl text-gray-500 mt-2">最後更新: {lastUpdated}</span>
       </div>
       <div className="flex flex-col items-start">
         {
           Object.keys(station_config).map((key) => {
             return (
-              <div key={key} className="flex justify-between items-center w-full p-4 border-b border-gray-500">
+              <div key={key} className={`flex justify-between items-center w-full p-4 border-b ${isDarkMode ? "border-gray-700" : "border-gray-500"}`}>
                 <div className="p-4">
-                  <span className="text-3xl font-bold text-3xl text-black">{key}</span>
+                  <span className="text-3xl font-bold">{key}</span>
                 </div>
                 <div className="flex flex-col items-end">
                   {
                     station_config[key].eta?.map((entry, index) => {
                       return (
                         <div key={index} className="flex flex-end justify-between items-left">
-                          <span className="text-black text-2xl">{entry.time} 分鐘 </span>
-                          <span className="text-gray-950 text-2xl ml-4">{entry.rmk}</span>
+                          <span className="text-2xl">{entry.time} 分鐘 </span>
+                          <span className="text-2xl ml-4">{entry.rmk}</span>
                         </div>
                       );
                     })
